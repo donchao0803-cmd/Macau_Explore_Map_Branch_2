@@ -10,3 +10,6 @@ Add discover date
 
 v1.3.4
 Add name order types/Add filter
+
+v1.3.5
+Add date/time filter
