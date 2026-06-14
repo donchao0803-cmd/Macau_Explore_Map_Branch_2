@@ -637,8 +637,8 @@
                 <button id="opt-stroke-desc" class="sort-opt-btn" onclick="setSortEngine('stroke', false)">🀄 中文筆劃⏬</button>
                 <button id="opt-alpha-asc" class="sort-opt-btn" onclick="setSortEngine('alpha', true)">🔤 葡文字母⏫</button>
                 <button id="opt-alpha-desc" class="sort-opt-btn" onclick="setSortEngine('alpha', false)">🔤 葡文字母⏬</button>
-                <button id="opt-time-desc" class="sort-opt-btn" onclick="setSortEngine('time', false)">📅 探索時間⏩</button>
-                <button id="opt-time-asc" class="sort-opt-btn" onclick="setSortEngine('time', true)">📅 探索時間⏪</button>
+                <button id="opt-time-desc" class="sort-opt-btn" onclick="setSortEngine('time', false)">📅 探索時間(新)</button>
+                <button id="opt-time-asc" class="sort-opt-btn" onclick="setSortEngine('time', true)">📅 探索時間(舊)</button>
             </div>
             <button class="dialog-close-btn" onclick="closeSortDialog()">取消</button>
         </div>
@@ -1010,7 +1010,7 @@
             let labelText = "🗃️ 排序：";
             if (type === 'stroke') labelText += ascending ? "🀄 中文筆劃⏫" : "🀄 中文筆劃⏬";
             else if (type === 'alpha') labelText += ascending ? "🔤 葡文字母⏫" : "🔤 葡文字母⏬";
-            else if (type === 'time') labelText += ascending ? "📅 探索時間(新)" : "📅 探索時間(舊)";
+            else if (type === 'time') labelText += ascending ? " 探索時間(舊)" : "📅 探索時間(新)";
             
             triggerBtn.innerText = labelText;
             closeSortDialog();
