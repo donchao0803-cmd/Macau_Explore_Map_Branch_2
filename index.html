@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG 澳門實境探索地圖 v1.3.4</title>
+    <title>RPG 澳門實境探索地圖 v1.3.5</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
@@ -457,6 +457,81 @@
             gap: 12px;
         }
         
+        #date-filter-dialog-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);            
+            z-index: 2500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .dialog-close2-btn {
+            background: #222;
+            color: white;
+            border: 2px solid #444;
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dialog-close2-btn:hover {
+            background: #444;
+            border-color: #f0b12b;
+        }
+        .dialog-close3-btn {
+            background: #222;
+            color: white;
+            border: 2px solid #444;
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dialog-close3-btn:hover {
+            background: #444;
+            border-color: #2bb1f0;
+        }
+        .search-input2 {
+            flex: 2;
+            min-width: 150px;
+            padding: 10px 10px;
+            border-radius: 10px;
+            border: 2px solid #444;
+            background: #222;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            font-family: monospace;
+            outline: none;
+        }
+        .search-input2:focus {
+            background: #444;
+            border-color: #f0b12b;
+        }
+        .filter-select2 {
+            flex: 2;
+            min-width: 150px;
+            padding: 10px 10px;
+            border-radius: 10px;
+            border: 2px solid #444;
+            background: #222;
+            color: #fff;            
+            font-size: 14px;
+            font-weight: bold;
+            font-family: monospace;
+            outline: none;
+            cursor: pointer;
+        }
+        .filter-select2:focus {
+            background: #444;
+            border-color: #2bb1f0;
+        }
+        
         /* 🗺️ 路名卡片 */
         .street-item-card {
             background: #2a2a2a;
@@ -620,7 +695,8 @@
                 <option value="OTHER">ℹ️其他 (坊/間/土腰...)</option> // 其它種類：舊社/通津/長城/土腰/空地/公地/地/碼頭/劏狗環/口/市/坊/居/村/尾/行/塘/間/樓
                 </select>
 
-            <button id="btn-sort-dialog-trigger" class="sort-toggle-btn" onclick="openSortDialog()">🗃️ 排序：🀄 中文筆劃⏫</button>  
+            <button id="btn-sort-dialog-trigger" class="sort-toggle-btn" onclick="openSortDialog()">🗃️ 排序：🀄 中文筆劃⏫</button>
+            <button id="btn-date-filter-trigger" class="sort-toggle-btn" style="background: #009688;" onclick="openDateFilterDialog()">📅 時間：🔎 全部</button>  
         </div> 
 
         <div class="modal-body">
@@ -644,8 +720,33 @@
         </div>
     </div>
 
+    <div id="date-filter-dialog-overlay" onclick="closeDateFilterDialog()">
+        <div class="sort-dialog-box" onclick="event.stopPropagation()" style="max-width: 320px; border-color: #009688">
+            <div class="dialog-title">請篩選日期及時間：</div>
+            <div class="sort-option-list">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="font-size: 13px; color: #aaa;">選擇日期 (年/月/日)：</label>
+                    <input type="date" id="filter-input-date" class="search-input2" style="width: 100%; box-sizing: border-box;" onchange="onDateInputChange()">
+                </div>
+            
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="font-size: 13px; color: #aaa;">選擇時間 (小時)：</label>
+                    <select id="filter-select-hour" class="filter-select2" style="width: 100%; box-sizing: border-box;" disabled>
+                        <option value="ALL">請先選擇日期</option>
+                    </select> 	
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="dialog-close2-btn"  onclick="applyDateFilter()">套用篩選</button>
+                <button class="dialog-close3-btn"  onclick="clearDateFilter()">清除篩選</button>
+            </div>
+            <button class="dialog-close-btn" style="margin-top: 10px;" onclick="closeDateFilterDialog()">取消</button>
+        </div>
+    </div>
+
     <div id="bottom-info-bar">
-        <div class="info-title" id="bar-title">🗺️ 澳門探索地圖 (v1.3.4) 📸</div> 
+        <div class="info-title" id="bar-title">🗺️ 澳門探索地圖 (v1.3.5) 📸</div> 
         <div class="info-coords" id="gps-status">定位中...</div>
     </div>
 
@@ -680,7 +781,11 @@
 
         // v1.3.4 全域排序設定狀態
         let currentSortType = 'stroke'; // 'stroke' | 'alpha' | 'time'
-        let currentSortAscending = true; 
+        let currentSortAscending = true;
+
+        // v1.3.5 全域時間篩選狀態
+        let currentFilterDate = ""; // 格式: "YYYY-MM-DD"
+        let currentFilterHour = "ALL"; // "ALL" 或 "00", "01", ..., "23" 
 
         // 取得格式化時間字串
         function getFormattedCurrentTime() {
@@ -1060,12 +1165,12 @@
             return 0; 
         }
 
-        /* 🔍 v1.3.4 強化版足跡列表渲染與雙層過濾引擎 */
+        /* 🔍 v1.3.5 強化版足跡列表渲染與三層過濾引擎 */
         function renderFootprintList() {
             const listTarget = document.getElementById('street-list-target');
             const searchKeyword = document.getElementById('footprint-search').value.trim().toLowerCase();
             const filterType = document.getElementById('footprint-filter-type').value;
-            
+    
             listTarget.innerHTML = ""; 
             document.getElementById('modal-title-count').innerText = ` 👟 已探索的澳門道路 (${unlockedStreets.length})`;
 
@@ -1083,77 +1188,61 @@
 
             // 第二層：後綴類型過濾 (大馬路 / 街 / 其他)
             filteredStreets = filteredStreets.filter(street => {
-                if (filterType === "ALL") return true;
-                
+                if (filterType === "ALL") return true;                
                 const zhName = street.zh;
                 const ptName = street.pt.toLowerCase();
-
                 if (filterType === "AVENIDA") {
                     return zhName.endsWith("大馬路") || ptName.startsWith("avenida");
-                }
-                               
+                }                               
                 if (filterType === "ESTRADA") {
                     return zhName.endsWith("公路") || ptName.startsWith("estrada");
-                }
-                
+                }                
                 if (filterType === "CAMINHO") {
                     return ptName.startsWith("caminho");
                 }
-
                 if (filterType === "RAMPA") {
                     return zhName.endsWith("斜路") || zhName.endsWith("斜坡") || ptName.startsWith("rampa");
-                }
-                
+                }                
                 if (filterType === "RUA") {
                     return zhName.endsWith("街") || ptName.startsWith("rua");
-                }
-                
+                }                
                 if (filterType === "TRAVESSA") {
                     return zhName.endsWith("巷") || ptName.startsWith("travessa");
-                }
-                
+                }                
                 if (filterType === "CALCADA") {
                     return zhName.endsWith("斜巷") || ptName.startsWith("calçada");
-                }
-                
+                }                
                 if (filterType === "BECO") {
                     return zhName.endsWith("里") || ptName.startsWith("beco");
-                }
-                
+                }                
                 if (filterType === "PATIO") {
                     return zhName.endsWith("圍") || ptName.startsWith("pátio");
-                }
-                
+                }                
                 if (filterType === "PATIO2") {
                     return zhName.endsWith("台");
-                }
-                
+                }                
                 if (filterType === "ESCADA") {
                     return zhName.endsWith("石級") || ptName.startsWith("escada") || ptName.startsWith("escadaria");
-                }
-                
+                }                
                 if (filterType === "ROTUNDA") {
                     return zhName.endsWith("圓形地") || ptName.startsWith("rotunda");
-                }
-                
+                }                
                 if (filterType === "LARGO") {
                     return zhName.endsWith("前地") || zhName.endsWith("廣場") || zhName.endsWith("花園") || ptName.startsWith("largo") || ptName.startsWith("praça") || ptName.startsWith("praceta") || ptName.startsWith("alameda");
-                }
-                
+                }                
                 if (filterType === "MIRADOURO") {
                     return zhName.endsWith("眺望台") || ptName.startsWith("miradouro");
                 }
-
                 if (filterType === "VIADUTO") {
                     return zhName.endsWith("天橋") || ptName.startsWith("viaduto");
                 }
-                 if (filterType === "TUNEL") {
+                if (filterType === "TUNEL") {
                     return zhName.endsWith("隧道") || ptName.startsWith("túnel") || ptName.startsWith("tunel");
                 }
-                 if (filterType === "PONTE") {
+                if (filterType === "PONTE") {
                     return zhName.endsWith("大橋") || ptName.startsWith("ponte");
                 }
-                 if (filterType === "TRILHO") {
+                if (filterType === "TRILHO") {
                     return zhName.endsWith("徑") || ptName.startsWith("trilho") || ptName.startsWith("trilhos") || ptName.startsWith("trilha") || ptName.startsWith("circuito") || ptName.startsWith("pista");
                 }
                 
@@ -1182,6 +1271,32 @@
                 return true;
             });
 
+            // ⚡ 第三層：v1.3.5 精準時間與小時區間過濾核心
+            if (currentFilterDate) {
+                filteredStreets = filteredStreets.filter(street => {
+                    if (!street.rawTime) return false; // 排除沒有有效時間戳的早期記錄
+            
+                    const d = new Date(street.rawTime);
+            
+                    // 轉換為本地時間格式 YYYY-MM-DD
+                    const itemYear = d.getFullYear();
+                    const itemMonth = String(d.getMonth() + 1).padStart(2, '0');
+                    const itemDay = String(d.getDate()).padStart(2, '0');
+                    const itemDateStr = `${itemYear}-${itemMonth}-${itemDay}`;
+            
+                    // 比對年/月/日
+                    if (itemDateStr !== currentFilterDate) return false;
+                    
+                    // 比對小時區間 (00:00 - 01:00)
+                    if (currentFilterHour !== "ALL") {
+                        const itemHourStr = String(d.getHours()).padStart(2, '0');
+                        if (itemHourStr !== currentFilterHour) return false;
+                    }
+            
+                    return true;
+                });
+            }
+
             if (filteredStreets.length === 0) {
                 listTarget.innerHTML = `<div class="empty-tip">找不到符合過濾與搜尋條件的道路結果。</div>`;
                 return;
@@ -1199,7 +1314,7 @@
 
                 const card = document.createElement('div');
                 card.className = "street-item-card";
-                
+        
                 card.innerHTML = `
                     <div class="card-clickable-area" title="在地圖上顯示此道路">
                         <div class="card-zh">${street.zh}</div>
@@ -1227,6 +1342,89 @@
 
                 listTarget.appendChild(card);
             });
+        }
+
+        // v1.3.5 開啟時間篩選彈出框
+        function openDateFilterDialog() {
+            document.getElementById('date-filter-dialog-overlay').style.display = "flex";
+            document.getElementById('filter-input-date').value = currentFilterDate;
+    
+        //v1.3.5 初始化或還原小時下拉選單
+            rebuildHourSelectOptions();
+            document.getElementById('filter-select-hour').value = currentFilterHour;
+        }
+
+        // v1.3.5 關閉時間篩選彈出框
+        function closeDateFilterDialog() {
+            document.getElementById('date-filter-dialog-overlay').style.display = "none";
+        }
+
+        // v1.3.5 當日期改變時，動態啟用/切換小時下拉選單
+        function onDateInputChange() {
+            rebuildHourSelectOptions();
+        }
+
+        // v1.3.5 動態建立小時下拉選單選項 (例如: 00:00-01:00)
+        function rebuildHourSelectOptions() {
+            const dateInput = document.getElementById('filter-input-date').value;
+            const hourSelect = document.getElementById('filter-select-hour');
+    
+            hourSelect.innerHTML = "";
+    
+            if (!dateInput) {
+                hourSelect.disabled = true;
+                hourSelect.innerHTML = `<option value="ALL">請先選擇日期</option>`;
+                return;
+            }
+    
+            hourSelect.disabled = false;
+            hourSelect.innerHTML = `<option value="ALL">全日</option>`;
+    
+            for (let h = 0; h < 24; h++) {
+                const startHour = String(h).padStart(2, '0');
+                const endHour = String(h + 1).padStart(2, '0');
+                hourSelect.innerHTML += `<option value="${startHour}">${startHour}:00 - ${endHour}:00</option>`;
+            }
+        }
+
+        // v1.3.5 套用篩選設定
+        function applyDateFilter() {
+            currentFilterDate = document.getElementById('filter-input-date').value;
+            currentFilterHour = document.getElementById('filter-select-hour').value;
+    
+            const triggerBtn = document.getElementById('btn-date-filter-trigger');
+            if (currentFilterDate) {
+                let displayHourText = "";
+                if (currentFilterHour === "ALL") {
+                    displayHourText = "全日";
+                } else {
+                    const nextH = String(parseInt(currentFilterHour) + 1).padStart(2, '0');
+                    displayHourText = `${currentFilterHour}:00-${nextH}:00`;
+                }
+                triggerBtn.innerText = `📅 時間：${currentFilterDate.substring(5)} (${displayHourText})`;
+                triggerBtn.style.background = "#FFC107";
+                triggerBtn.style.color = "#111111";
+            } else {
+                clearDateFilter();
+                return;
+            }
+    
+            closeDateFilterDialog();
+            renderFootprintList();
+        }
+
+        // v1.3.5 清除篩選條件
+        function clearDateFilter() {
+            currentFilterDate = "";
+            currentFilterHour = "ALL";
+    
+            const triggerBtn = document.getElementById('btn-date-filter-trigger');
+            triggerBtn.innerText = "📅 時間：🔎 全部";
+            triggerBtn.style.background = "#009688";
+            triggerBtn.style.color = "#ffffff";
+    
+            closeDateFilterDialog();
+            renderFootprintList();
         }
 
         function closeFootprintPage() {
@@ -1312,7 +1510,7 @@
             }
             const saveData = {
                 gameIdentity: "Macau-Fog-Map-RPG",
-                version: "1.3.4",
+                version: "1.3.5",
                 downloadTimestamp: new Date().toISOString(),
                 lastLocation: [currentLat, currentLng],
                 exploredPaths: unlockedPaths,
