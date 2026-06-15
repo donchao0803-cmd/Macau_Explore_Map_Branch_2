@@ -34,7 +34,7 @@
             height: 100%;
             z-index: 2;            
             pointer-events: none;  
-            opacity: 0.85;         
+            opacity: 0.95;         
         }
 
         /* 💬 頂層雙語路名框 */
@@ -878,7 +878,7 @@
             const centerLatLng = map.getCenter();
             const centerScreenPos = map.latLngToContainerPoint(centerLatLng);
 
-            const radius80LatLng = L.GeometryUtil.destination(centerLatLng, 0, 80);
+            const radius80LatLng = L.GeometryUtil.destination(centerLatLng, 0, 85);
             const radius80ScreenPos = map.latLngToContainerPoint(radius80LatLng);
             const pixels80 = Math.abs(centerScreenPos.y - radius80ScreenPos.y);
 
