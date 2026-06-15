@@ -68,7 +68,8 @@
             color: #000000;
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 4; 
+            -webkit-line-clamp: 4;
+            line-clamp: 4; 
             overflow: hidden;
         }
 
@@ -80,7 +81,8 @@
             line-height: 1.3;
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 4; 
+            -webkit-line-clamp: 4;
+            line-clamp: 4; 
             overflow: hidden;
             white-space: pre-wrap;
         }
@@ -278,7 +280,7 @@
             white-space: nowrap;
         }
         @keyframes pulse {
-            0 { transform: translateX(-50%) scale(1); }
+            0% { transform: translateX(-50%) scale(1); }
             50% { transform: translateX(-50%) scale(1.08); box-shadow: 0 12px 30px rgba(255,87,34,0.7); }
             100% { transform: translateX(-50%) scale(1); }
         }
@@ -469,7 +471,7 @@
         .dialog-close2-btn {
             background: #222;
             color: white;
-            border: 2px solid #444;
+            border: 2px solid #f0b12b;
             width: 100%;
             padding: 10px;
             border-radius: 10px;
@@ -479,12 +481,12 @@
         }
         .dialog-close2-btn:hover {
             background: #444;
-            border-color: #f0b12b;
+            border-color: #edc061;
         }
         .dialog-close3-btn {
             background: #222;
             color: white;
-            border: 2px solid #444;
+            border: 2px solid #eb4836;
             width: 100%;
             padding: 10px;
             border-radius: 10px;
@@ -494,7 +496,7 @@
         }
         .dialog-close3-btn:hover {
             background: #444;
-            border-color: #2bb1f0;
+            border-color: #eb8175;
         }
         .search-input2 {
             flex: 2;
