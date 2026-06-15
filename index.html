@@ -1401,7 +1401,7 @@
                     displayHourText = "全日";
                 } else {
                     const nextH = String(parseInt(currentFilterHour) + 1).padStart(2, '0');
-                    displayHourText = `${currentFilterHour}:00-${nextH}:00`;
+                    displayHourText = `${currentFilterHour}h-${nextH}h`;
                 }
                 triggerBtn.innerText = `📅 時間：${currentFilterDate.substring(5)} (${displayHourText})`;
                 triggerBtn.style.background = "#FFC107";
