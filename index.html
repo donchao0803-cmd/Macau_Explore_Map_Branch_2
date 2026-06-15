@@ -1133,7 +1133,7 @@
         }
 
         /* ⚖️ v1.3.4 全方位複雜核心排序計算機 */
-        function compareStreetsMultiEngine(streetA, streetB) {
+function compareStreetsMultiEngine(streetA, streetB) {
             // 模式一：依據時間排序
             if (currentSortType === 'time') {
                 const timeA = streetA.rawTime || 0;
@@ -1169,182 +1169,109 @@
 
         /* 🔍 v1.3.5 強化版足跡列表渲染與三層過濾引擎 */
         function renderFootprintList() {
-            const listTarget = document.getElementById('street-list-target');
-            const searchKeyword = document.getElementById('footprint-search').value.trim().toLowerCase();
-            const filterType = document.getElementById('footprint-filter-type').value;
+    const listTarget = document.getElementById('street-list-target');
+    const searchInput = document.getElementById('footprint-search');
+    const typeSelect = document.getElementById('footprint-filter-type');
     
-            listTarget.innerHTML = ""; 
-            document.getElementById('modal-title-count').innerText = ` 👟 已探索的澳門道路 (${unlockedStreets.length})`;
-
-            if (unlockedStreets.length === 0) {
-                listTarget.innerHTML = `<div class="empty-tip">目前尚未探索任何道路，快連上GPS四處走走吧！</div>`;
-                return;
-            }
-
-            // 第一層：關鍵字搜尋過濾
-            let filteredStreets = unlockedStreets.filter(street => {
-                const matchZh = street.zh.toLowerCase().includes(searchKeyword);
-                const matchPt = street.pt.toLowerCase().includes(searchKeyword);
-                return matchZh || matchPt; 
-            });
-
-            // 第二層：後綴類型過濾 (大馬路 / 街 / 其他)
-            filteredStreets = filteredStreets.filter(street => {
-                if (filterType === "ALL") return true;                
-                const zhName = street.zh;
-                const ptName = street.pt.toLowerCase();
-                if (filterType === "AVENIDA") {
-                    return zhName.endsWith("大馬路") || ptName.startsWith("avenida");
-                }                               
-                if (filterType === "ESTRADA") {
-                    return zhName.endsWith("公路") || ptName.startsWith("estrada");
-                }                
-                if (filterType === "CAMINHO") {
-                    return ptName.startsWith("caminho");
-                }
-                if (filterType === "RAMPA") {
-                    return zhName.endsWith("斜路") || zhName.endsWith("斜坡") || ptName.startsWith("rampa");
-                }                
-                if (filterType === "RUA") {
-                    return zhName.endsWith("街") || ptName.startsWith("rua");
-                }                
-                if (filterType === "TRAVESSA") {
-                    return zhName.endsWith("巷") || ptName.startsWith("travessa");
-                }                
-                if (filterType === "CALCADA") {
-                    return zhName.endsWith("斜巷") || ptName.startsWith("calçada");
-                }                
-                if (filterType === "BECO") {
-                    return zhName.endsWith("里") || ptName.startsWith("beco");
-                }                
-                if (filterType === "PATIO") {
-                    return zhName.endsWith("圍") || ptName.startsWith("pátio");
-                }                
-                if (filterType === "PATIO2") {
-                    return zhName.endsWith("台");
-                }                
-                if (filterType === "ESCADA") {
-                    return zhName.endsWith("石級") || ptName.startsWith("escada") || ptName.startsWith("escadaria");
-                }                
-                if (filterType === "ROTUNDA") {
-                    return zhName.endsWith("圓形地") || ptName.startsWith("rotunda");
-                }                
-                if (filterType === "LARGO") {
-                    return zhName.endsWith("前地") || zhName.endsWith("廣場") || zhName.endsWith("花園") || ptName.startsWith("largo") || ptName.startsWith("praça") || ptName.startsWith("praceta") || ptName.startsWith("alameda");
-                }                
-                if (filterType === "MIRADOURO") {
-                    return zhName.endsWith("眺望台") || ptName.startsWith("miradouro");
-                }
-                if (filterType === "VIADUTO") {
-                    return zhName.endsWith("天橋") || ptName.startsWith("viaduto");
-                }
-                if (filterType === "TUNEL") {
-                    return zhName.endsWith("隧道") || ptName.startsWith("túnel") || ptName.startsWith("tunel");
-                }
-                if (filterType === "PONTE") {
-                    return zhName.endsWith("大橋") || ptName.startsWith("ponte");
-                }
-                if (filterType === "TRILHO") {
-                    return zhName.endsWith("徑") || ptName.startsWith("trilho") || ptName.startsWith("trilhos") || ptName.startsWith("trilha") || ptName.startsWith("circuito") || ptName.startsWith("pista");
-                }
-                
-                if (filterType === "OTHER") {
-                    const isAvenida = zhName.endsWith("大馬路") || ptName.startsWith("avenida");
-                    const isEstrada = zhName.endsWith("公路") || ptName.startsWith("estrada");
-                    const isCaminho = ptName.startsWith("caminho")
-                    const isRampa = zhName.endsWith("斜路") || zhName.endsWith("斜坡") || ptName.startsWith("rampa")
-                    const isRua = zhName.endsWith("街") || ptName.startsWith("rua")
-                    const isTravessa = zhName.endsWith("巷") || ptName.startsWith("travessa")
-                    const isCalcada = zhName.endsWith("斜巷") || ptName.startsWith("calçada")
-                    const isBeco = zhName.endsWith("里") || ptName.startsWith("beco")
-                    const isPatio = zhName.endsWith("圍") || ptName.startsWith("pátio")
-                    const isPatio2 = zhName.endsWith("台")
-                    const isEscada = zhName.endsWith("石級") || ptName.startsWith("escada") || ptName.startsWith("escadaria")
-                    const isRotunda = zhName.endsWith("圓形地") || ptName.startsWith("rotunda")
-                    const isLargo = zhName.endsWith("前地") || zhName.endsWith("廣場") || zhName.endsWith("花園") || ptName.startsWith("largo") || ptName.startsWith("praça") || ptName.startsWith("praceta") || ptName.startsWith("alameda")
-                    const isMiradouro = zhName.endsWith("眺望台") || ptName.startsWith("miradouro")
-                    const isViaduto = zhName.endsWith("天橋") || ptName.startsWith("viaduto")
-                    const isTunel = zhName.endsWith("隧道") || ptName.startsWith("túnel") || ptName.startsWith("tunel")
-                    const isPonte = zhName.endsWith("大橋") || ptName.startsWith("ponte")
-                    const isTrilho = zhName.endsWith("徑") || ptName.startsWith("trilho") || ptName.startsWith("trilhos") || ptName.startsWith("trilha") || ptName.startsWith("circuito") || ptName.startsWith("pista")
-                    return !isAvenida && !isEstrada && !isCaminho && !isRampa && !isRua && !isTravessa && !isCalcada && !isBeco && !isPatio && !isPatio2 && !isEscada && !isRotunda && !isLargo && !isMiradouro && !isViaduto && !isTunel && !isPonte && !isTrilho;
-                }
-
-                return true;
-            });
-
-            // ⚡ 第三層：v1.3.5 精準時間與小時區間過濾核心
-            if (currentFilterDate) {
-                filteredStreets = filteredStreets.filter(street => {
-                    if (!street.rawTime) return false; // 排除沒有有效時間戳的早期記錄
-            
-                    const d = new Date(street.rawTime);
-            
-                    // 轉換為本地時間格式 YYYY-MM-DD
-                    const itemYear = d.getFullYear();
-                    const itemMonth = String(d.getMonth() + 1).padStart(2, '0');
-                    const itemDay = String(d.getDate()).padStart(2, '0');
-                    const itemDateStr = `${itemYear}-${itemMonth}-${itemDay}`;
-            
-                    // 比對年/月/日
-                    if (itemDateStr !== currentFilterDate) return false;
-                    
-                    // 比對小時區間 (00:00 - 01:00)
-                    if (currentFilterHour !== "ALL") {
-                        const itemHourStr = String(d.getHours()).padStart(2, '0');
-                        if (itemHourStr !== currentFilterHour) return false;
-                    }
-            
-                    return true;
-                });
-            }
-
-            if (filteredStreets.length === 0) {
-                listTarget.innerHTML = `<div class="empty-tip">找不到符合過濾與搜尋條件的道路結果。</div>`;
-                return;
-            }
-
-            // 執行多維度排序
-            filteredStreets.sort(compareStreetsMultiEngine);
-
-            // 渲染 DOM 卡片
-            filteredStreets.forEach(street => {
-                const firstChar = street.zh.charAt(0);
-                const firstStrokeNum = getCharStroke(firstChar);
-                const strokeText = firstStrokeNum === 999 ? "未分類" : `${firstStrokeNum} 劃`;
-                const timeText = street.unlockedAt ? street.unlockedAt : "未知時間";
-
-                const card = document.createElement('div');
-                card.className = "street-item-card";
+    if (!listTarget) return;
+    listTarget.innerHTML = "";
+    
+    const filterText = searchInput ? searchInput.value.trim().toLowerCase() : "";
+    const selectedType = typeSelect ? typeSelect.value : "ALL";
+    
+    // 1. 同步執行三大過濾：種類、時間選單、以及【強化型搜尋欄 (支援日期/時間搜尋)】
+    let filteredList = unlockedStreets.filter(street => {
         
-                card.innerHTML = `
-                    <div class="card-clickable-area" title="在地圖上顯示此道路">
-                        <div class="card-zh">${street.zh}</div>
-                        <div class="card-pt">${street.pt}</div>
-                        <div class="card-meta-row">
-                            <div class="card-stroke">🖊️ 首字筆劃：${strokeText}</div>
-                            <div class="card-time">📅 探索時間：${timeText}</div>
-                        </div>
-                    </div>
-                    <button class="delete-street-btn" title="刪除此記錄">❌</button>
-                `;
-
-                const clickArea = card.querySelector('.card-clickable-area');
-                clickArea.addEventListener('click', () => {
-                    const finalLat = street.lat || currentLat;
-                    const finalLng = street.lng || currentLng;
-                    focusAndHighlightStreet(finalLat, finalLng);
-                });
-
-                const delBtn = card.querySelector('.delete-street-btn');
-                delBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); 
-                    deleteStreetRecord(street.zh, street.pt);
-                });
-
-                listTarget.appendChild(card);
-            });
+        // A. 道路種類篩選
+        if (selectedType !== "ALL" && getStreetCategoryKey(street.zh, street.pt) !== selectedType) {
+            return false;
         }
+        
+        // B. 時間彈出對話框的過濾條件 (維持原本 v1.3.5 介面功能)
+        if (currentFilterDate !== "") {
+            if (!street.unlockedAt) return false;
+            const parts = street.unlockedAt.split(" ");
+            const datePart = parts[0].replace(/\//g, "-"); 
+            if (datePart !== currentFilterDate) return false;
+            
+            if (currentFilterHour !== "ALL") {
+                const hourPart = parts[1] ? parts[1].split(":")[0] : "";
+                if (hourPart !== currentFilterHour) return false;
+            }
+        }
+        
+        // C. 🔍 搜尋欄改良：同時支援「中文路名」、「葡文路名」與「解鎖日期時間」比對
+        const zhLower = street.zh ? street.zh.toLowerCase() : "";
+        const ptLower = street.pt ? street.pt.toLowerCase() : "";
+        const dateStrLower = street.unlockedAt ? street.unlockedAt.toLowerCase() : ""; // 格式例如 "2026/06/15 17:45"
+        
+        // 只要這三個地方有任何一處包含輸入的關鍵字就保留
+        const matchesSearch = zhLower.includes(filterText) || 
+                              ptLower.includes(filterText) || 
+                              dateStrLower.includes(filterText);
+                              
+        return matchesSearch;
+    });
+    
+    // 2. 更新彈出頁面頂部的總數量統計
+    document.getElementById('modal-title-count').innerText = `👟 已探索的澳門道路 (${filteredList.length}/${unlockedStreets.length})`;
+    
+    if (filteredList.length === 0) {
+        listTarget.innerHTML = `<div class="empty-tip">抅不到相符的道路或日期 🗺️</div>`;
+        return;
+    }
+    
+    // 3. 排序引擎處理 (依據目前的排序設定)
+    filteredList.sort((a, b) => {
+        if (currentSortType === 'stroke') {
+            const strokeA = getChineseStringStrokeScore(a.zh);
+            const strokeB = getChineseStringStrokeScore(b.zh);
+            return currentSortAscending ? strokeA - strokeB : strokeB - strokeA;
+        } else if (currentSortType === 'alpha') {
+            const ptA = (a.pt || "").toLowerCase();
+            const ptB = (b.pt || "").toLowerCase();
+            return currentSortAscending ? ptA.localeCompare(ptB) : ptB.localeCompare(ptA);
+        } else if (currentSortType === 'time') {
+            const timeA = a.rawTime || 0;
+            const timeB = b.rawTime || 0;
+            return currentSortAscending ? timeA - timeB : timeB - timeA;
+        }
+        return 0;
+    });
+    
+    // 4. 動態生成路名卡片 HTML DOM
+    filteredList.forEach(street => {
+        const strokeScore = getChineseStringStrokeScore(street.zh);
+        
+        const card = document.createElement('div');
+        card.className = "street-item-card";
+        
+        const clickArea = document.createElement('div');
+        clickArea.className = "card-clickable-area";
+        clickArea.onclick = () => focusAndHighlightStreet(street.lat, street.lng);
+        
+        clickArea.innerHTML = `
+            <div class="card-zh">${street.zh}</div>
+            <div class="card-pt">${street.pt || ''}</div>
+            <div class="card-meta-row">
+                <span class="card-stroke">🀄 ${strokeScore} 畫</span>
+                <span class="card-time">📅 ${street.unlockedAt || '未知時間'}</span>
+            </div>
+        `;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = "delete-street-btn";
+        deleteBtn.innerText = "×";
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            removeSingleStreetFromInventory(street.zh);
+        };
+        
+        card.appendChild(clickArea);
+        card.appendChild(deleteBtn);
+        listTarget.appendChild(card);
+    });
+}
 
         // v1.3.5 開啟時間篩選彈出框
         function openDateFilterDialog() {
